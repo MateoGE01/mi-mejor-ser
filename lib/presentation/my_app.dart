@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mi_mejor_ser/presentation/pages/home_page.dart';
+import 'package:mi_mejor_ser/presentation/pages/habit_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Mi Mejor Ser',
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: HabitPage(),
     );
   }
 }

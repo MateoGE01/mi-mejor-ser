@@ -1,37 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
+import 'package:mi_mejor_ser/presentation/controllers/list_habits.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_button.dart';
-import 'package:mi_mejor_ser/presentation/widgets/bool_habit.dart';
-import 'package:mi_mejor_ser/presentation/widgets/new_habit_box.dart';
+import 'package:mi_mejor_ser/presentation/widgets/habit.dart';
+import 'package:mi_mejor_ser/presentation/widgets/add_habit_box.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HabitPage extends StatefulWidget {
+  const HabitPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HabitPage> createState() => _HabitPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  // Mateo: Debo añadir un controlador(en controllers) que tenga la lista de hábitos predefinidos y la lista de hábitos añadidos(ya veré si lo dejo como una o dos listas)
-  // Mateo: Para más organización debo hacer lo de arriba y por los requisitos que piden Controladores.
+class _HabitPageState extends State<HabitPage> {
 
-  // Lista de hábitos, por ahora funciona para los hábitos predefinidos y los que se añadan
-  List<Map<String, dynamic>> habits = [
-    {
-      'name': 'Exercise',
-      'completed': false,
-      'timesPerDay': 1, // Número de veces que se debe realizar al día
-      'currentCount': 0 // Contador de veces realizadas en el día
-    },
-    {
-      'name': 'Drink Water',
-      'completed': false,
-      'timesPerDay': 8,
-      'currentCount': 0
-    },
-    // Agrega más hábitos según sea necesario
-  ];
+  // List of habits, this is the controller
+  final HabitsController habitsController = Get.find();
 
   // Controller for the text field in the dialog for adding a new habit for the name
   final TextEditingController _newHabitDialogController =
@@ -44,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // Function to add a new habit
   void addHabitAction() {
     setState(() {
-      habits.add({
+      habitsController.habits.add({
         'name': _newHabitDialogController.text,
         'completed': false,
         'timesPerDay': int.tryParse(_timesPerDayDialogController.text) ?? 1,
@@ -56,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
+  // Function to cancel the action of adding a new habit
   void cancelAction() {
     setState(() {
       // Clear the text field
@@ -81,22 +67,23 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  // Controller for the list of completed habits
   CompletedHabitsController completedHabitsController = Get.find();
 
   // Function to handle the tap on the checkbox
   void checkBoxTap(bool? value, int index) {
     setState(() {
       if (value == true) {
-        habits[index]['currentCount']++;
-        if (habits[index]['currentCount'] == habits[index]['timesPerDay']) {
-          habits[index]['completed'] = true;
+        habitsController.habits[index]['currentCount']++;
+        if (habitsController.habits[index]['currentCount'] ==
+            habitsController.habits[index]['timesPerDay']) {
+          habitsController.habits[index]['completed'] = true;
           completedHabitsController.addCompletedHabit();
-          completedHabitsController
-              .givingExperiencePerHabit(habits[index]['timesPerDay']);
+          completedHabitsController.givingExperiencePerHabit(
+              habitsController.habits[index]['timesPerDay']);
         }
       }
-      // Aquí se podría añadir para que se elimine el hábito si se marca como completado y
-      // se sume un punto al contador de hábitos completados, lo segundo me interesa más
+      // Aquí se podría añadir para que se elimine el hábito si se marca como completado 
     });
   }
 
@@ -124,13 +111,13 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: createHabit,
       ),
       body: ListView.builder(
-        itemCount: habits.length,
+        itemCount: habitsController.habits.length,
         itemBuilder: (context, index) {
           return BoolHabit(
-            habitName: habits[index]['name'],
-            habitCompleted: habits[index]['completed'],
-            timesPerDay: habits[index]['timesPerDay'],
-            currentCount: habits[index]['currentCount'],
+            habitName: habitsController.habits[index]['name'],
+            habitCompleted: habitsController.habits[index]['completed'],
+            timesPerDay: habitsController.habits[index]['timesPerDay'],
+            currentCount: habitsController.habits[index]['currentCount'],
             onChanged: (value) => checkBoxTap(value, index),
           );
         },
