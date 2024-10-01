@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_button.dart';
 import 'package:mi_mejor_ser/presentation/widgets/bool_habit.dart';
 import 'package:mi_mejor_ser/presentation/widgets/new_habit_box.dart';
@@ -79,6 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  CompletedHabitsController completedHabitsController = Get.find();
+
   // Function to handle the tap on the checkbox
   void checkBoxTap(bool? value, int index) {
     setState(() {
@@ -86,6 +90,9 @@ class _MyHomePageState extends State<MyHomePage> {
         habits[index]['currentCount']++;
         if (habits[index]['currentCount'] == habits[index]['timesPerDay']) {
           habits[index]['completed'] = true;
+          completedHabitsController.addCompletedHabit();
+          completedHabitsController
+              .givingExperiencePerHabit(habits[index]['timesPerDay']);
         }
       }
       // Aquí se podría añadir para que se elimine el hábito si se marca como completado y
@@ -97,20 +104,37 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mi Mejor Ser'),
+        actions: [
+          Obx(() {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  'EXP: ${completedHabitsController.experienceGained}',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
       floatingActionButton: addHabitFloatingActionButton(
         onPressed: createHabit,
       ),
       body: ListView.builder(
-          itemCount: habits.length,
-          itemBuilder: (context, index) {
-            return BoolHabit(
-              habitName: habits[index]["name"],
-              habitCompleted: habits[index]["completed"],
-              timesPerDay: habits[index]["timesPerDay"],
-              currentCount: habits[index]["currentCount"],
-              onChanged: (value) => checkBoxTap(value, index),
-            );
-          }),
+        itemCount: habits.length,
+        itemBuilder: (context, index) {
+          return BoolHabit(
+            habitName: habits[index]['name'],
+            habitCompleted: habits[index]['completed'],
+            timesPerDay: habits[index]['timesPerDay'],
+            currentCount: habits[index]['currentCount'],
+            onChanged: (value) => checkBoxTap(value, index),
+          );
+        },
+      ),
     );
   }
 }
