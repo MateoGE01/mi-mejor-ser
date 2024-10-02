@@ -13,43 +13,61 @@ class HabitsController extends GetxController {
     {
       'name': 'Drink Water',
       'completed': false,
-      'timesPerDay': 1, 
+      'timesPerDay': 1,
       'currentCount': 0
     },
     {
       'name': 'Read a Book',
       'completed': false,
-      'timesPerDay': 1, 
+      'timesPerDay': 1,
       'currentCount': 0
     },
     {
       'name': 'Meditate',
       'completed': false,
-      'timesPerDay': 1, 
+      'timesPerDay': 1,
       'currentCount': 0
     },
     {
       'name': 'Walk the Dog',
       'completed': false,
-      'timesPerDay': 1, 
+      'timesPerDay': 1,
       'currentCount': 0
     },
     {
       'name': 'Brush Teeth',
       'completed': false,
-      'timesPerDay': 1, 
+      'timesPerDay': 1,
       'currentCount': 0
     },
     {
       'name': 'Practice a Hobby',
       'completed': false,
-      'timesPerDay': 1, 
+      'timesPerDay': 1,
       'currentCount': 0
     },
   ].obs;
 
-  final _habits = <Map<String, dynamic>>[].obs;
+  // Mapa para almacenar hábitos por fecha
+  final _habitsByDate = <String, List<Map<String, dynamic>>>{}.obs;
 
   List<Map<String, dynamic>> get predefinedHabits => _predefinedHabits;
-  List<Map<String, dynamic>> get habits => _habits;
+
+  // Método para agregar un hábito a una fecha específica
+  void addHabit(String date, String name, int timesPerDay) {
+    if (!_habitsByDate.containsKey(date)) {
+      _habitsByDate[date] = [];
+    }
+    _habitsByDate[date]!.add({
+      'name': name,
+      'completed': false,
+      'timesPerDay': timesPerDay,
+      'currentCount': 0,
+    });
+  }
+
+  // Método para obtener los hábitos de una fecha específica
+  List<Map<String, dynamic>> getHabitsForDate(String date) {
+    return _habitsByDate[date] ?? [];
+  }
 }
