@@ -104,7 +104,8 @@ class _HabitPageState extends State<HabitPage> {
             currentDateHabits[index]['timesPerDay']) {
           currentDateHabits[index]['completed'] = true;
 
-          completedHabitsController.addCompletedHabit();
+          completedHabitsController
+              .addCompletedHabit(); //no se usa, esta función lo que hace es sumar 1 a la variable _completedHabitsTotal
           completedHabitsController.givingExperiencePerHabit(
               currentDateHabits[index]['timesPerDay']);
         }
@@ -123,11 +124,19 @@ class _HabitPageState extends State<HabitPage> {
           Obx(() {
             return Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(
-                  'EXP: ${completedHabitsController.experienceGained}',
-                  style: const TextStyle(fontSize: 18),
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Nivel: ${completedHabitsController.level}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'EXP: ${completedHabitsController.experienceGained}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
               ),
             );
           }),
