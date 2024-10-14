@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mi_mejor_ser/presentation/controllers/list_habits.dart';
 
-// ignore: camel_case_types
 class newHabitDialog extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController timesPerDayController;
   final VoidCallback onAdd;
   final VoidCallback onCancel;
+  final Function(String) onFrequencyChanged;
 
   const newHabitDialog({
     super.key,
@@ -15,17 +15,20 @@ class newHabitDialog extends StatefulWidget {
     required this.onCancel,
     required this.nameController,
     required this.timesPerDayController,
+    required this.onFrequencyChanged, 
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _newHabitDialogState createState() => _newHabitDialogState();
 }
 
-// ignore: camel_case_types
 class _newHabitDialogState extends State<newHabitDialog> {
   final HabitsController habitsController = Get.find<HabitsController>();
   String? selectedHabit;
+  String? selectedFrequency = 'Daily'; 
+
+  // Lista con las opciones de frecuencia
+  final List<String> frequencyOptions = ['Daily', 'Weekly', 'Monthly', 'Only Today'];
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +63,22 @@ class _newHabitDialogState extends State<newHabitDialog> {
             decoration: const InputDecoration(hintText: 'Times per day'),
             keyboardType: TextInputType.number,
           ),
+          DropdownButton<String>(
+            value: selectedFrequency,
+            hint: const Text('Select frequency'),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedFrequency = newValue;
+                widget.onFrequencyChanged(newValue!); // Llama a la función al cambiar la frecuencia
+              });
+            },
+            items: frequencyOptions.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
         ],
       ),
       actions: [
@@ -72,3 +91,4 @@ class _newHabitDialogState extends State<newHabitDialog> {
     );
   }
 }
+

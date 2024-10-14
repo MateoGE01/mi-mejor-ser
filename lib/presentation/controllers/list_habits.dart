@@ -1,5 +1,6 @@
 // Mateo: Aquí pondré la lista habits que está en la clase _MyHomePageState y la función addHabitAction
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class HabitsController extends GetxController {
   // Lista de hábitos predefinidos
@@ -54,7 +55,7 @@ class HabitsController extends GetxController {
   List<Map<String, dynamic>> get predefinedHabits => _predefinedHabits;
 
   // Método para agregar un hábito a una fecha específica
-  void addHabit(String date, String name, int timesPerDay) {
+  void addHabit(String date, String name, int timesPerDay, String frequency) {
     if (!_habitsByDate.containsKey(date)) {
       _habitsByDate[date] = [];
     }
@@ -63,11 +64,42 @@ class HabitsController extends GetxController {
       'completed': false,
       'timesPerDay': timesPerDay,
       'currentCount': 0,
+      'frequency': frequency, // Agregar la frecuencia
     });
   }
 
   // Método para obtener los hábitos de una fecha específica
   List<Map<String, dynamic>> getHabitsForDate(String date) {
-    return _habitsByDate[date] ?? [];
+    List<Map<String, dynamic>> habitsForDate = [];
+
+    _habitsByDate.forEach((key, habits) {
+      for (var habit in habits) {
+        if (habitAppliesToDate(habit, key, date)) {
+          habitsForDate.add(habit);
+        }
+      }
+    });
+
+    return habitsForDate;
   }
+
+  // Método para verificar si un hábito debe aplicarse en una fecha específica
+  bool habitAppliesToDate(
+    Map<String, dynamic> habit, String startDate, String currentDate) {
+      DateTime start = DateFormat('MMMM d, y').parse(startDate);
+      DateTime current = DateFormat('MMMM d, y').parse(currentDate);
+
+      switch (habit['frequency']) {
+        case 'Daily':
+          return true;
+        case 'Weekly':
+          return current.difference(start).inDays % 7 == 0;
+        case 'Monthly':
+          return start.day == current.day;
+        case 'Only Today':
+          return startDate == currentDate;
+        default:
+          return false;
+      }
+    }
 }
