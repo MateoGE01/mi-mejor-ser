@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
 import 'package:mi_mejor_ser/presentation/controllers/list_habits.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_button.dart';
+import 'package:mi_mejor_ser/presentation/widgets/exp_progress_bar.dart';
 import 'package:mi_mejor_ser/presentation/widgets/habit.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_box.dart';
 import 'package:intl/intl.dart';
@@ -58,10 +59,10 @@ class _HabitPageState extends State<HabitPage> {
   void addHabitAction() {
     setState(() {
       habitsController.addHabit(
-        getFormattedDate(), 
+        getFormattedDate(),
         _newHabitDialogController.text,
         int.tryParse(_timesPerDayDialogController.text) ?? 1,
-        selectedFrequency ?? 'Daily', 
+        selectedFrequency ?? 'Daily',
       );
     });
     _newHabitDialogController.clear();
@@ -94,7 +95,8 @@ class _HabitPageState extends State<HabitPage> {
           },
           onFrequencyChanged: (String frequency) {
             setState(() {
-              selectedFrequency = frequency; // Actualiza la frecuencia seleccionada
+              selectedFrequency =
+                  frequency; // Actualiza la frecuencia seleccionada
             });
           },
         );
@@ -130,28 +132,24 @@ class _HabitPageState extends State<HabitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Mejor Ser'),
-        actions: [
-          Obx(() {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Mi Mejor Ser'),
+            Obx(() {
+              return Row(
                 children: [
                   Text(
                     'Nivel: ${completedHabitsController.level}',
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    'EXP: ${completedHabitsController.experienceGained}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
+                  ExperienceProgressBar(),
                 ],
-              ),
-            );
-          }),
-        ],
+              );
+            }),
+          ],
+        ),
       ),
       floatingActionButton: addHabitFloatingActionButton(
         onPressed: createHabit,
