@@ -8,8 +8,8 @@ class CompletedHabitsController extends GetxController {
   final _experienceGained = 0.obs; // Variable stores the experience gained
   int get experienceGained => _experienceGained.value;
 
-  static const int limitExperience = 20; // Variable stores the limit of experience to level up
-  int _limitExperience = limitExperience;
+  final _limitExperience = 20.obs; // Variable stores the limit of experience to level up
+  int get limitExperience => _limitExperience.value;
 
   final _level = 1.obs; // Variable stores the level of the user
   int get level => _level.value;
@@ -32,10 +32,10 @@ class CompletedHabitsController extends GetxController {
 
   // Function to check if the user has enough experience to level up
   int checkLevelUp() {
-    if (_experienceGained.value >= _limitExperience) {
+    if (_experienceGained.value >= _limitExperience.value) {
       _level.value++;
-      _experienceGained.value -= _limitExperience;
-      _limitExperience += 50;
+      _experienceGained.value -= _limitExperience.value;
+      _limitExperience.value += 50;
     }
     return _level.value;
   }
