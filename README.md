@@ -12,7 +12,9 @@ Características Clave
 
 ### Completado de prácticas: Mecanismo sencillo para marcar una práctica como realizada.
 
--Me parece que ya fue completada, sin embargo necesita ser complementada por la 2da.
+![completado](https://github.com/user-attachments/assets/4568973a-7753-4a72-9231-fbfd9df06999)
+
+
 
 ### Gamificación: Los elementos de gamificación son parte de la propuesta de cada grupo.
 
