@@ -32,6 +32,9 @@ class _HabitPageState extends State<HabitPage> {
   // Variable to hold the current date
   DateTime currentDate = DateTime.now();
 
+  // Variable to hold the selected frequency
+  String? selectedFrequency = 'Daily';
+
   // Function to format the date
   String getFormattedDate() {
     return DateFormat.yMMMMd().format(currentDate);
@@ -55,9 +58,10 @@ class _HabitPageState extends State<HabitPage> {
   void addHabitAction() {
     setState(() {
       habitsController.addHabit(
-        getFormattedDate(), // Usa la fecha formateada actual
+        getFormattedDate(), 
         _newHabitDialogController.text,
         int.tryParse(_timesPerDayDialogController.text) ?? 1,
+        selectedFrequency ?? 'Daily', 
       );
     });
     _newHabitDialogController.clear();
@@ -79,16 +83,23 @@ class _HabitPageState extends State<HabitPage> {
   // Function to create a new habit
   void createHabit() {
     showDialog(
-        context: context,
-        builder: (context) {
-          return newHabitDialog(
-            // This is a custom widget
-            nameController: _newHabitDialogController,
-            timesPerDayController: _timesPerDayDialogController,
-            onAdd: addHabitAction,
-            onCancel: cancelAction,
-          );
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return newHabitDialog(
+          nameController: _newHabitDialogController,
+          timesPerDayController: _timesPerDayDialogController,
+          onAdd: addHabitAction,
+          onCancel: () {
+            Navigator.of(context).pop();
+          },
+          onFrequencyChanged: (String frequency) {
+            setState(() {
+              selectedFrequency = frequency; // Actualiza la frecuencia seleccionada
+            });
+          },
+        );
+      },
+    );
   }
 
   // Function to handle the tap on the checkbox
