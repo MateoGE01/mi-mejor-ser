@@ -13,7 +13,7 @@ Características Clave
 ### Completado de prácticas: Mecanismo sencillo para marcar una práctica como realizada.
 
 
-<img src="https://github.com/user-attachments/assets/4568973a-7753-4a72-9231-fbfd9df06999" width="250" height="250"/>
+<img src="https://github.com/user-attachments/assets/4568973a-7753-4a72-9231-fbfd9df06999" width="400" height="800"/>
 
 
 
