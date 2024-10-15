@@ -161,22 +161,26 @@ class _HabitPageState extends State<HabitPage> {
       floatingActionButton: addHabitFloatingActionButton(
         onPressed: createHabit,
       ),
-      body: ListView.builder(
-        itemCount: habitsController.getHabitsForDate(getFormattedDate()).length,
-        itemBuilder: (context, index) {
-          final habit =
-              habitsController.getHabitsForDate(getFormattedDate())[index];
-          return BoolHabit(
-            habitName: habit['name'],
-            habitCompleted: habit['completed'],
-            timesPerDay: habit['timesPerDay'],
-            currentCount: habit['currentCount'],
-            onChanged: (value) => checkBoxTap(value, index),
-          );
-        },
+      body: Container(
+        color: const Color.fromRGBO(239, 247, 246, 1), // Color de fondo del body
+        child: ListView.builder(
+          itemCount:
+              habitsController.getHabitsForDate(getFormattedDate()).length,
+          itemBuilder: (context, index) {
+            final habit =
+                habitsController.getHabitsForDate(getFormattedDate())[index];
+            return BoolHabit(
+              habitName: habit['name'],
+              habitCompleted: habit['completed'],
+              timesPerDay: habit['timesPerDay'],
+              currentCount: habit['currentCount'],
+              onChanged: (value) => checkBoxTap(value, index),
+            );
+          },
+        ),
       ),
       bottomNavigationBar: Container(
-        color: Colors.grey[200],
+        color: const Color.fromRGBO(247, 214, 224, 1), // Color de fondo del bottomNavigationBar
         padding: const EdgeInsets.all(16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
