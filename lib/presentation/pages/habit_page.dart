@@ -132,6 +132,7 @@ class _HabitPageState extends State<HabitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(123, 223, 242, 1), // Color pastel para el AppBar
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -141,10 +142,16 @@ class _HabitPageState extends State<HabitPage> {
                 children: [
                   Text(
                     'Nivel: ${completedHabitsController.level}',
-                    style: const TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(width: 10),
                   ExperienceProgressBar(),
+                  const SizedBox(width: 10),
+                  const CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage(
+                        'lib/presentation/assets/images/sloth-icon.png'), // Ruta de la imagen del avatar
+                  ),
                 ],
               );
             }),
