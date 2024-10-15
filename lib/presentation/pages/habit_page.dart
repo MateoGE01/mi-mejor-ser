@@ -131,41 +131,59 @@ class _HabitPageState extends State<HabitPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(123, 223, 242, 1), // Color pastel para el AppBar
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Mi Mejor Ser'),
-            Obx(() {
-              return Row(
-                children: [
-                  Text(
-                    'Nivel: ${completedHabitsController.level}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(width: 10),
-                  ExperienceProgressBar(),
-                  const SizedBox(width: 10),
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage(
-                        'lib/presentation/assets/images/sloth-icon.png'), // Ruta de la imagen del avatar
-                  ),
-                ],
-              );
-            }),
-          ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(123, 223, 242, 1), // Color pastel para el AppBar
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Mi Mejor Ser'),
+                Obx(() {
+                  return Row(
+                    children: [
+                      Text(
+                        'Nivel: ${completedHabitsController.level}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 10),
+                      ExperienceProgressBar(),
+                      const SizedBox(width: 10),
+                      const CircleAvatar(
+                        radius: 20,
+                        backgroundImage: AssetImage(
+                            'lib/presentation/assets/images/sloth-icon.png'), // Ruta de la imagen del avatar
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
         ),
       ),
-      floatingActionButton: addHabitFloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: createHabit,
+        backgroundColor: const Color.fromRGBO(242, 181, 212, 1), // Color del botón
+        child: Icon(Icons.add),
       ),
       body: Container(
         color: const Color.fromRGBO(239, 247, 246, 1), // Color de fondo del body
         child: ListView.builder(
-          itemCount:
-              habitsController.getHabitsForDate(getFormattedDate()).length,
+          itemCount: habitsController.getHabitsForDate(getFormattedDate()).length,
           itemBuilder: (context, index) {
             final habit =
                 habitsController.getHabitsForDate(getFormattedDate())[index];
@@ -180,8 +198,18 @@ class _HabitPageState extends State<HabitPage> {
         ),
       ),
       bottomNavigationBar: Container(
-        color: const Color.fromRGBO(247, 214, 224, 1), // Color de fondo del bottomNavigationBar
         padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(247, 214, 224, 1), // Color de fondo del bottomNavigationBar
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, -1), // changes position of shadow
+            ),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

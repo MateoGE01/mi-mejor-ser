@@ -13,12 +13,16 @@ class ExperienceProgressBar extends StatelessWidget {
       return Column(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(10), // Bordes redondeados
+            borderRadius: BorderRadius.circular(20), // Bordes redondeados
             child: Container(
               width: 100, // Ajusta el ancho según sea necesario
               height: 10, // Altura de la barra de progreso
               decoration: BoxDecoration(
                 color: Colors.grey[300], // Color de fondo fijo
+                border: Border.all(
+                  color: Colors.black, // Color del borde
+                  width: 2.0, // Ancho del borde
+                ),
               ),
               child: Stack(
                 children: [
@@ -28,10 +32,8 @@ class ExperienceProgressBar extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.red,
-                            Colors.orange,
-                            Colors.yellow,
-                            Colors.green,
+                            const Color.fromRGBO(247, 214, 224, 1),
+                            const Color.fromRGBO(242, 181, 212, 1),
                           ],
                         ),
                       ),
