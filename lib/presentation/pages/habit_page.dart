@@ -126,6 +126,15 @@ class _HabitPageState extends State<HabitPage> {
     });
   }
 
+  // Delete a habit
+  void deleteHabit(int index) {
+    setState(() {
+      final currentDateHabits =
+          habitsController.habitsByDate[getFormattedDate()]!;
+      currentDateHabits.removeAt(index);
+    });
+  }
+
   // Build the widget, this is basically the habits page
   @override
   Widget build(BuildContext context) {
@@ -134,7 +143,8 @@ class _HabitPageState extends State<HabitPage> {
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color.fromRGBO(123, 223, 242, 1), // Color pastel para el AppBar
+            color: const Color.fromRGBO(
+                123, 223, 242, 1), // Color pastel para el AppBar
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -161,10 +171,11 @@ class _HabitPageState extends State<HabitPage> {
                       const SizedBox(width: 10),
                       ExperienceProgressBar(),
                       const SizedBox(width: 10),
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 20,
                         backgroundImage: AssetImage(
-                            'lib/presentation/assets/images/sloth-icon.png'), // Ruta de la imagen del avatar
+                          completedHabitsController.avatarImage(),
+                        ), // Ruta de la imagen del avatar
                       ),
                     ],
                   );
@@ -176,13 +187,16 @@ class _HabitPageState extends State<HabitPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: createHabit,
-        backgroundColor: const Color.fromRGBO(242, 181, 212, 1), // Color del botón
+        backgroundColor:
+            const Color.fromRGBO(242, 181, 212, 1), // Color del botón
         child: Icon(Icons.add),
       ),
       body: Container(
-        color: const Color.fromRGBO(239, 247, 246, 1), // Color de fondo del body
+        color:
+            const Color.fromRGBO(239, 247, 246, 1), // Color de fondo del body
         child: ListView.builder(
-          itemCount: habitsController.getHabitsForDate(getFormattedDate()).length,
+          itemCount:
+              habitsController.getHabitsForDate(getFormattedDate()).length,
           itemBuilder: (context, index) {
             final habit =
                 habitsController.getHabitsForDate(getFormattedDate())[index];
@@ -192,6 +206,7 @@ class _HabitPageState extends State<HabitPage> {
               timesPerDay: habit['timesPerDay'],
               currentCount: habit['currentCount'],
               onChanged: (value) => checkBoxTap(value, index),
+              onDelete: (context) => deleteHabit(index),
             );
           },
         ),
@@ -199,7 +214,8 @@ class _HabitPageState extends State<HabitPage> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: const Color.fromRGBO(247, 214, 224, 1), // Color de fondo del bottomNavigationBar
+          color: const Color.fromRGBO(
+              247, 214, 224, 1), // Color de fondo del bottomNavigationBar
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),

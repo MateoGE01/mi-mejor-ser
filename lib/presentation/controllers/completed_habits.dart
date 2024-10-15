@@ -2,13 +2,15 @@
 import 'package:get/get.dart';
 
 class CompletedHabitsController extends GetxController {
-  final _completedHabitsTotal = 0.obs; // Variable stores the total of completed habits
+  final _completedHabitsTotal =
+      0.obs; // Variable stores the total of completed habits
   int get completedHabitsTotal => _completedHabitsTotal.value;
 
   final _experienceGained = 0.obs; // Variable stores the experience gained
   int get experienceGained => _experienceGained.value;
 
-  final _limitExperience = 20.obs; // Variable stores the limit of experience to level up
+  final _limitExperience =
+      20.obs; // Variable stores the limit of experience to level up
   int get limitExperience => _limitExperience.value;
 
   final _level = 1.obs; // Variable stores the level of the user
@@ -38,5 +40,19 @@ class CompletedHabitsController extends GetxController {
       _limitExperience.value += 50;
     }
     return _level.value;
+  }
+
+  String avatarImage() {
+    if (_completedHabitsTotal.value > 5 && _completedHabitsTotal.value <= 10) {
+      return 'lib/presentation/assets/images/sloth-icon.png';
+    } else if (_completedHabitsTotal.value > 10 &&
+        _completedHabitsTotal.value <= 15) {
+      return 'lib/presentation/assets/images/Raven.png';
+    } else if (_completedHabitsTotal.value > 15 &&
+        _completedHabitsTotal.value <= 20) {
+      return 'lib/presentation/assets/images/Gryffindor.png';
+    } else {
+      return 'lib/presentation/assets/images/vacaPatineta.jpg';
+    }
   }
 }

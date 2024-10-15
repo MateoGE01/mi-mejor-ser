@@ -51,6 +51,7 @@ class HabitsController extends GetxController {
 
   // Mapa para almacenar hábitos por fecha
   final _habitsByDate = <String, List<Map<String, dynamic>>>{}.obs;
+  Map<String, List<Map<String, dynamic>>> get habitsByDate => _habitsByDate;
 
   List<Map<String, dynamic>> get predefinedHabits => _predefinedHabits;
 
