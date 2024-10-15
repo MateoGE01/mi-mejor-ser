@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:mi_mejor_ser/presentation/widgets/habit_circular_progress_bar.dart';
 
 class BoolHabit extends StatelessWidget {
   final String habitName;
   final bool habitCompleted;
-  final int? timesPerDay;
-  final int? currentCount;
+  final int timesPerDay;
+  final int currentCount;
   final Function(bool?)? onChanged;
 
-  const BoolHabit(
-      {super.key,
-      required this.habitName,
-      required this.habitCompleted,
-      this.onChanged,
-      this.timesPerDay,
-      this.currentCount});
+  const BoolHabit({
+    Key? key,
+    required this.habitName,
+    required this.habitCompleted,
+    required this.timesPerDay,
+    required this.currentCount,
+    this.onChanged,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +74,13 @@ class BoolHabit extends StatelessWidget {
             ),
             const SizedBox(width: 8), // Espacio entre el checkbox y el texto
             Text(
-              '$habitName $currentCount/$timesPerDay',
+              habitName,
               style: TextStyle(fontSize: 16), // Tamaño del texto aumentado
+            ),
+            Spacer(),
+            HabitCircularProgressBar(
+              currentCount: currentCount,
+              timesPerDay: timesPerDay,
             ),
           ],
         ),
