@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
 import 'package:mi_mejor_ser/presentation/controllers/list_habits.dart';
-import 'package:mi_mejor_ser/presentation/widgets/add_habit_button.dart';
 import 'package:mi_mejor_ser/presentation/widgets/exp_progress_bar.dart';
 import 'package:mi_mejor_ser/presentation/widgets/habit.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_box.dart';

@@ -21,7 +21,7 @@ class ExperienceProgressBar extends StatelessWidget {
                 color: Colors.grey[300], // Color de fondo fijo
                 border: Border.all(
                   color: Colors.black, // Color del borde
-                  width: 2.0, // Ancho del borde
+                  width: 1.5, // Ancho del borde
                 ),
               ),
               child: Stack(
