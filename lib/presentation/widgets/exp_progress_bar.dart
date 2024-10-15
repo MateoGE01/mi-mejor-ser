@@ -12,13 +12,35 @@ class ExperienceProgressBar extends StatelessWidget {
           completedHabitsController.limitExperience;
       return Column(
         children: [
-          Container(
-            width: 100, // Ajusta el ancho según sea necesario
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              color: Colors.blue,
-              minHeight: 10,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20), // Bordes redondeados
+            child: Container(
+              width: 100, // Ajusta el ancho según sea necesario
+              height: 10, // Altura de la barra de progreso
+              decoration: BoxDecoration(
+                color: Colors.grey[300], // Color de fondo fijo
+                border: Border.all(
+                  color: Colors.black, // Color del borde
+                  width: 2.0, // Ancho del borde
+                ),
+              ),
+              child: Stack(
+                children: [
+                  FractionallySizedBox(
+                    widthFactor: progress,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color.fromRGBO(247, 214, 224, 1),
+                            const Color.fromRGBO(242, 181, 212, 1),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: 4),
