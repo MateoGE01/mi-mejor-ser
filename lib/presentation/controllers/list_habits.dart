@@ -86,21 +86,21 @@ class HabitsController extends GetxController {
 
   // Método para verificar si un hábito debe aplicarse en una fecha específica
   bool habitAppliesToDate(
-    Map<String, dynamic> habit, String startDate, String currentDate) {
-      DateTime start = DateFormat('MMMM d, y').parse(startDate);
-      DateTime current = DateFormat('MMMM d, y').parse(currentDate);
+      Map<String, dynamic> habit, String startDate, String currentDate) {
+    DateTime start = DateFormat('MMMM d, y').parse(startDate);
+    DateTime current = DateFormat('MMMM d, y').parse(currentDate);
 
-      switch (habit['frequency']) {
-        case 'Daily':
-          return true;
-        case 'Weekly':
-          return current.difference(start).inDays % 7 == 0;
-        case 'Monthly':
-          return start.day == current.day;
-        case 'Only Today':
-          return startDate == currentDate;
-        default:
-          return false;
-      }
+    switch (habit['frequency']) {
+      case 'Daily':
+        return true;
+      case 'Weekly':
+        return current.difference(start).inDays % 7 == 0;
+      case 'Monthly':
+        return start.day == current.day;
+      case 'Only Today':
+        return startDate == currentDate;
+      default:
+        return false;
     }
+  }
 }
