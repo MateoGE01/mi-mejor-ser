@@ -55,6 +55,9 @@ class HabitsController extends GetxController {
 
   List<Map<String, dynamic>> get predefinedHabits => _predefinedHabits;
 
+  // Mapa para almacenar el progreso de los hábitos por fecha y nombre
+  final habitProgressByDate = <String, Map<String, Map<String, dynamic>>>{}.obs;
+
   // Método para agregar un hábito a una fecha específica
   void addHabit(String date, String name, int timesPerDay, String frequency) {
     if (!_habitsByDate.containsKey(date)) {
@@ -76,7 +79,24 @@ class HabitsController extends GetxController {
     _habitsByDate.forEach((key, habits) {
       for (var habit in habits) {
         if (habitAppliesToDate(habit, key, date)) {
-          habitsForDate.add(habit);
+          // Inicializar el progreso si no existe para la fecha actual
+          if (!habitProgressByDate.containsKey(date)) {
+            habitProgressByDate[date] = {};
+          }
+          if (!habitProgressByDate[date]!.containsKey(habit['name'])) {
+            habitProgressByDate[date]![habit['name']] = {
+              'currentCount': 0,
+              'completed': false,
+            };
+          }
+
+          // Agregar los datos del progreso al hábito
+          var progress = habitProgressByDate[date]![habit['name']]!;
+          habitsForDate.add({
+            ...habit,
+            'currentCount': progress['currentCount'],
+            'completed': progress['completed'],
+          });
         }
       }
     });
@@ -85,22 +105,21 @@ class HabitsController extends GetxController {
   }
 
   // Método para verificar si un hábito debe aplicarse en una fecha específica
-  bool habitAppliesToDate(
-      Map<String, dynamic> habit, String startDate, String currentDate) {
-    DateTime start = DateFormat('MMMM d, y').parse(startDate);
-    DateTime current = DateFormat('MMMM d, y').parse(currentDate);
+  bool habitAppliesToDate(Map<String, dynamic> habit, String startDate, String currentDate) {
+      DateTime start = DateFormat('MMMM d, y').parse(startDate);
+      DateTime current = DateFormat('MMMM d, y').parse(currentDate);
 
-    switch (habit['frequency']) {
-      case 'Daily':
-        return true;
-      case 'Weekly':
-        return current.difference(start).inDays % 7 == 0;
-      case 'Monthly':
-        return start.day == current.day;
-      case 'Only Today':
-        return startDate == currentDate;
-      default:
-        return false;
+      switch (habit['frequency']) {
+        case 'Daily':
+          return true;
+        case 'Weekly':
+          return current.difference(start).inDays % 7 == 0;
+        case 'Monthly':
+          return start.day == current.day;
+        case 'Only Today':
+          return startDate == currentDate;
+        default:
+          return false;
+      }
     }
-  }
 }

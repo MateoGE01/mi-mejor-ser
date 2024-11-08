@@ -67,6 +67,7 @@ class _HabitPageState extends State<HabitPage> {
     _newHabitDialogController.clear();
     _timesPerDayDialogController.clear();
     Navigator.of(context).pop();
+    selectedFrequency = 'Daily';
   }
 
   // Function to cancel the action of adding a new habit
@@ -77,6 +78,7 @@ class _HabitPageState extends State<HabitPage> {
       _timesPerDayDialogController.clear();
       // Close the dialog
       Navigator.of(context).pop();
+      selectedFrequency = 'Daily';
     });
   }
 
@@ -89,9 +91,7 @@ class _HabitPageState extends State<HabitPage> {
           nameController: _newHabitDialogController,
           timesPerDayController: _timesPerDayDialogController,
           onAdd: addHabitAction,
-          onCancel: () {
-            Navigator.of(context).pop();
-          },
+          onCancel: cancelAction,
           onFrequencyChanged: (String frequency) {
             setState(() {
               selectedFrequency =
@@ -106,20 +106,22 @@ class _HabitPageState extends State<HabitPage> {
   // Function to handle the tap on the checkbox
   void checkBoxTap(bool? value, int index) {
     setState(() {
-      final currentDateHabits =
-          habitsController.getHabitsForDate(getFormattedDate());
+      final currentDate = getFormattedDate();
+      final currentDateHabits = habitsController.getHabitsForDate(currentDate);
+      final habit = currentDateHabits[index];
 
       if (value == true) {
-        currentDateHabits[index]['currentCount']++;
+        // Actualizar el progreso del hábito para la fecha actual
+        final habitName = habit['name'];
+        final progress = habitsController.habitProgressByDate[currentDate]![habitName]!;
 
-        if (currentDateHabits[index]['currentCount'] ==
-            currentDateHabits[index]['timesPerDay']) {
-          currentDateHabits[index]['completed'] = true;
+        progress['currentCount']++;
 
-          completedHabitsController
-              .addCompletedHabit(); //no se usa, esta función lo que hace es sumar 1 a la variable _completedHabitsTotal
-          completedHabitsController.givingExperiencePerHabit(
-              currentDateHabits[index]['timesPerDay']);
+        if (progress['currentCount'] == habit['timesPerDay']) {
+          progress['completed'] = true;
+
+          completedHabitsController.addCompletedHabit();
+          completedHabitsController.givingExperiencePerHabit(habit['timesPerDay']);
         }
       }
       // Aquí se podría añadir para que se elimine el hábito si se marca como completado
