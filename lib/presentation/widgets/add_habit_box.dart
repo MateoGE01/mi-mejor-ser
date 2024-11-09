@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mi_mejor_ser/presentation/controllers/list_habits.dart';
 
-class newHabitDialog extends StatefulWidget {
+class NewHabitDialog extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController timesPerDayController;
   final VoidCallback onAdd;
   final VoidCallback onCancel;
   final Function(String) onFrequencyChanged;
 
-  const newHabitDialog({
+  const NewHabitDialog({
     super.key,
     required this.onAdd,
     required this.onCancel,
     required this.nameController,
     required this.timesPerDayController,
-    required this.onFrequencyChanged, 
+    required this.onFrequencyChanged,
   });
 
   @override
-  _newHabitDialogState createState() => _newHabitDialogState();
+  NewHabitDialogState createState() => NewHabitDialogState();
 }
 
-class _newHabitDialogState extends State<newHabitDialog> {
+class NewHabitDialogState extends State<NewHabitDialog> {
   final HabitsController habitsController = Get.find<HabitsController>();
   String? selectedHabit;
-  String? selectedFrequency = 'Daily'; 
+  String? selectedFrequency = 'Daily';
 
   // Lista con las opciones de frecuencia
   final List<String> frequencyOptions = ['Daily', 'Weekly', 'Monthly', 'Only Today'];
@@ -49,8 +49,8 @@ class _newHabitDialogState extends State<newHabitDialog> {
             items: habitsController.predefinedHabits
                 .map<DropdownMenuItem<String>>((habit) {
               return DropdownMenuItem<String>(
-                value: habit['name'],
-                child: Text(habit['name']),
+                value: habit.name,
+                child: Text(habit.name),
               );
             }).toList(),
           ),
@@ -91,4 +91,3 @@ class _newHabitDialogState extends State<newHabitDialog> {
     );
   }
 }
-

@@ -31,7 +31,7 @@ class BoolHabit extends StatelessWidget {
             SlidableAction(
               onPressed: onDelete,
               icon: Icons.delete,
-              backgroundColor: Color.fromRGBO(247, 214, 224, 1),
+              backgroundColor: const Color.fromRGBO(247, 214, 224, 1),
               borderRadius: BorderRadius.circular(5.0),
             ),
           ],
@@ -48,7 +48,7 @@ class BoolHabit extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
@@ -72,7 +72,7 @@ class BoolHabit extends StatelessWidget {
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 2,
                           blurRadius: 5,
-                          offset: Offset(0, 3), // changes position of shadow
+                          offset: const Offset(0, 3), // changes position of shadow
                         ),
                       ],
                     ),
@@ -96,9 +96,9 @@ class BoolHabit extends StatelessWidget {
               const SizedBox(width: 8), // Espacio entre el checkbox y el texto
               Text(
                 habitName,
-                style: TextStyle(fontSize: 16), // Tamaño del texto aumentado
+                style: const TextStyle(fontSize: 16), // Tamaño del texto aumentado
               ),
-              Spacer(),
+              const Spacer(),
               HabitCircularProgressBar(
                 currentCount: currentCount,
                 timesPerDay: timesPerDay,

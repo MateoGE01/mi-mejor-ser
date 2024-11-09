@@ -6,55 +6,56 @@ import 'package:mi_mejor_ser/presentation/widgets/exp_progress_bar.dart';
 import 'package:mi_mejor_ser/presentation/widgets/habit.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_box.dart';
 import 'package:intl/intl.dart';
+import 'package:mi_mejor_ser/domain/models/user.dart';
 
 class HabitPage extends StatefulWidget {
-  const HabitPage({super.key});
+  final User user;
+
+  const HabitPage({Key? key, required this.user}) : super(key: key);
 
   @override
-  State<HabitPage> createState() => _HabitPageState();
+  _HabitPageState createState() => _HabitPageState();
 }
 
 class _HabitPageState extends State<HabitPage> {
-  // List of habits, this is the controller
-  final HabitsController habitsController = Get.find();
+  late HabitsController habitsController;
+  late CompletedHabitsController completedHabitsController;
 
-  // Controller for the text field in the dialog for adding a new habit for the name
   final TextEditingController _newHabitDialogController =
       TextEditingController();
-
-  // Controller for the text field in the dialog for adding a new habit for the times per day
   final TextEditingController _timesPerDayDialogController =
       TextEditingController();
 
-  // Controller for the list of completed habits
-  CompletedHabitsController completedHabitsController = Get.find();
-
-  // Variable to hold the current date
   DateTime currentDate = DateTime.now();
-
-  // Variable to hold the selected frequency
   String? selectedFrequency = 'Daily';
 
-  // Function to format the date
+  @override
+  void initState() {
+    super.initState();
+    habitsController = HabitsController(widget.user);
+    completedHabitsController = CompletedHabitsController(widget.user);
+
+    // Registrar los controladores en GetX
+    Get.put<HabitsController>(habitsController);
+    Get.put<CompletedHabitsController>(completedHabitsController);
+  }
+
   String getFormattedDate() {
     return DateFormat.yMMMMd().format(currentDate);
   }
 
-  // Function to go back one day
   void previousDay() {
     setState(() {
       currentDate = currentDate.subtract(const Duration(days: 1));
     });
   }
 
-  // Function to go forward one day
   void nextDay() {
     setState(() {
       currentDate = currentDate.add(const Duration(days: 1));
     });
   }
 
-  // Function to add a new habit
   void addHabitAction() {
     setState(() {
       habitsController.addHabit(
@@ -70,32 +71,27 @@ class _HabitPageState extends State<HabitPage> {
     selectedFrequency = 'Daily';
   }
 
-  // Function to cancel the action of adding a new habit
   void cancelAction() {
     setState(() {
-      // Clear the text field
       _newHabitDialogController.clear();
       _timesPerDayDialogController.clear();
-      // Close the dialog
       Navigator.of(context).pop();
       selectedFrequency = 'Daily';
     });
   }
 
-  // Function to create a new habit
   void createHabit() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return newHabitDialog(
+        return NewHabitDialog(
           nameController: _newHabitDialogController,
           timesPerDayController: _timesPerDayDialogController,
           onAdd: addHabitAction,
           onCancel: cancelAction,
           onFrequencyChanged: (String frequency) {
             setState(() {
-              selectedFrequency =
-                  frequency; // Actualiza la frecuencia seleccionada
+              selectedFrequency = frequency;
             });
           },
         );
@@ -103,149 +99,193 @@ class _HabitPageState extends State<HabitPage> {
     );
   }
 
-  // Function to handle the tap on the checkbox
   void checkBoxTap(bool? value, int index) {
     setState(() {
-      final currentDate = getFormattedDate();
-      final currentDateHabits = habitsController.getHabitsForDate(currentDate);
-      final habit = currentDateHabits[index];
+      final habit =
+          habitsController.getHabitsForDate(getFormattedDate())[index];
 
       if (value == true) {
-        // Actualizar el progreso del hábito para la fecha actual
-        final habitName = habit['name'];
-        final progress = habitsController.habitProgressByDate[currentDate]![habitName]!;
+        habit.currentCount++;
 
-        progress['currentCount']++;
-
-        if (progress['currentCount'] == habit['timesPerDay']) {
-          progress['completed'] = true;
-
+        if (habit.currentCount >= habit.timesPerDay) {
+          habit.completed = true;
           completedHabitsController.addCompletedHabit();
-          completedHabitsController.givingExperiencePerHabit(habit['timesPerDay']);
+          completedHabitsController.givingExperiencePerHabit(habit.timesPerDay);
+        }
+      } else {
+        if (habit.currentCount > 0) {
+          habit.currentCount--;
+
+          if (habit.completed && habit.currentCount < habit.timesPerDay) {
+            habit.completed = false;
+            // Aquí podrías restar experiencia si es necesario
+          }
         }
       }
-      // Aquí se podría añadir para que se elimine el hábito si se marca como completado
+
+      // Actualizar el estado del usuario y guardar
+      habitsController.updateUserHabits();
+      completedHabitsController.updateUserProgress();
     });
   }
 
-  // Delete a habit
   void deleteHabit(int index) {
     setState(() {
-      final currentDateHabits =
-          habitsController.habitsByDate[getFormattedDate()]!;
-      currentDateHabits.removeAt(index);
+      habitsController.deleteHabit(index);
     });
   }
 
-  // Build the widget, this is basically the habits page
+  void logout() {
+    // Guarda los datos del usuario actual antes de cerrar sesión
+    habitsController.saveUserData();
+    completedHabitsController.saveUserData();
+
+    // Elimina los controladores del contenedor de GetX
+    Get.delete<HabitsController>();
+    Get.delete<CompletedHabitsController>();
+
+    Navigator.of(context).pushReplacementNamed('/login');
+  }
+
+  Color getAuraColor(int level) {
+    List<Color> colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.purple,
+      Colors.orange,
+      Colors.red,
+    ];
+    return colors[level % colors.length];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(
-                123, 223, 242, 1), // Color pastel para el AppBar
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3), // changes position of shadow
+      appBar: AppBar(
+        title: Text('Bienvenido, ${widget.user.username}'),
+        actions: [
+          Obx(() {
+            Color auraColor =
+                getAuraColor(completedHabitsController.level.value);
+            return GestureDetector(
+              onTap: () {
+                showMenu(
+                  context: context,
+                  position: RelativeRect.fromLTRB(1000, 80, 0, 0),
+                  items: [
+                    PopupMenuItem(
+                      child: Text('Cerrar sesión'),
+                      value: 'logout',
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == 'logout') {
+                    logout();
+                  }
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: auraColor.withOpacity(0.6),
+                      spreadRadius: 4,
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.grey[800],
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Mi Mejor Ser'),
-                Obx(() {
-                  return Row(
-                    children: [
-                      Text(
-                        'Nivel: ${completedHabitsController.level}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 10),
-                      ExperienceProgressBar(),
-                      const SizedBox(width: 10),
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: AssetImage(
-                          completedHabitsController.avatarImage(),
-                        ), // Ruta de la imagen del avatar
-                      ),
-                    ],
-                  );
-                }),
-              ],
-            ),
-          ),
-        ),
+            );
+          }),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: createHabit,
-        backgroundColor:
-            const Color.fromRGBO(242, 181, 212, 1), // Color del botón
         child: Icon(Icons.add),
       ),
-      body: Container(
-        color:
-            const Color.fromRGBO(239, 247, 246, 1), // Color de fondo del body
-        child: ListView.builder(
-          itemCount:
-              habitsController.getHabitsForDate(getFormattedDate()).length,
-          itemBuilder: (context, index) {
-            final habit =
-                habitsController.getHabitsForDate(getFormattedDate())[index];
-            return BoolHabit(
-              habitName: habit['name'],
-              habitCompleted: habit['completed'],
-              timesPerDay: habit['timesPerDay'],
-              currentCount: habit['currentCount'],
-              onChanged: (value) => checkBoxTap(value, index),
-              onDelete: (context) => deleteHabit(index),
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(
-              247, 214, 224, 1), // Color de fondo del bottomNavigationBar
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, -1), // changes position of shadow
+      body: Column(
+        children: [
+          // Barra de nivel y experiencia
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Obx(() => Text(
+                      'Nivel: ${completedHabitsController.level.value}',
+                      style: TextStyle(fontSize: 16),
+                    )),
+                SizedBox(width: 8),
+                Obx(() => ExperienceProgressBar(
+                      experience: completedHabitsController.experience.value,
+                      level: completedHabitsController.level.value,
+                    )),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Button to go back one day
-            IconButton(
-              icon: const Icon(Icons.arrow_left),
-              onPressed: previousDay,
+          ),
+          // Navegación de fechas
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: const Color.fromRGBO(247, 214, 224, 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, -1),
+                ),
+              ],
             ),
-            Text(
-              getFormattedDate(),
-              style: const TextStyle(fontSize: 16, color: Colors.black),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_left),
+                  onPressed: previousDay,
+                ),
+                Text(
+                  getFormattedDate(),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_right),
+                  onPressed: nextDay,
+                ),
+              ],
             ),
-            // Button to go forward one day
-            IconButton(
-              icon: const Icon(Icons.arrow_right),
-              onPressed: nextDay,
-            ),
-          ],
-        ),
+          ),
+          // Lista de hábitos
+          Expanded(
+            child: Obx(() {
+              var habits =
+                  habitsController.getHabitsForDate(getFormattedDate());
+              return ListView.builder(
+                itemCount: habits.length,
+                itemBuilder: (context, index) {
+                  final habit = habits[index];
+                  return BoolHabit(
+                    habitName: habit.name,
+                    habitCompleted: habit.completed,
+                    timesPerDay: habit.timesPerDay,
+                    currentCount: habit.currentCount,
+                    onChanged: (value) => checkBoxTap(value, index),
+                    onDelete: (context) => deleteHabit(index),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

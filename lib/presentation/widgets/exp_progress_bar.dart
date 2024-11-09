@@ -3,53 +3,37 @@ import 'package:get/get.dart';
 import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
 
 class ExperienceProgressBar extends StatelessWidget {
-  final CompletedHabitsController completedHabitsController = Get.find();
+  final int experience;
+  final int level;
+
+  ExperienceProgressBar({
+    Key? key,
+    required this.experience,
+    required this.level,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      double progress = completedHabitsController.experienceGained /
-          completedHabitsController.limitExperience;
-      return Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20), // Bordes redondeados
-            child: Container(
-              width: 100, // Ajusta el ancho según sea necesario
-              height: 10, // Altura de la barra de progreso
-              decoration: BoxDecoration(
-                color: Colors.grey[300], // Color de fondo fijo
-                border: Border.all(
-                  color: Colors.black, // Color del borde
-                  width: 1.5, // Ancho del borde
-                ),
-              ),
-              child: Stack(
-                children: [
-                  FractionallySizedBox(
-                    widthFactor: progress,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color.fromRGBO(247, 214, 224, 1),
-                            const Color.fromRGBO(242, 181, 212, 1),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    double progress = experience /
+        100; // Suponiendo que 100 es la experiencia máxima por nivel
+
+    return Container(
+      height: 20,
+      width: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: progress.clamp(0.0, 1.0), // Asegura que esté entre 0 y 1
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(10),
           ),
-          SizedBox(height: 4),
-          Text(
-            'EXP: ${completedHabitsController.experienceGained} / ${completedHabitsController.limitExperience}',
-            style: TextStyle(fontSize: 12),
-          ),
-        ],
-      );
-    });
+        ),
+      ),
+    );
   }
 }

@@ -1,125 +1,84 @@
-// Mateo: Aquí pondré la lista habits que está en la clase _MyHomePageState y la función addHabitAction
 import 'package:get/get.dart';
+import 'package:mi_mejor_ser/domain/models/user.dart';
 import 'package:intl/intl.dart';
 
 class HabitsController extends GetxController {
-  // Lista de hábitos predefinidos
-  final _predefinedHabits = <Map<String, dynamic>>[
-    {
-      'name': 'Exercise',
-      'completed': false,
-      'timesPerDay': 1, // Número de veces que se debe realizar al día
-      'currentCount': 0 // Contador de veces realizadas en el día
-    },
-    {
-      'name': 'Drink Water',
-      'completed': false,
-      'timesPerDay': 1,
-      'currentCount': 0
-    },
-    {
-      'name': 'Read a Book',
-      'completed': false,
-      'timesPerDay': 1,
-      'currentCount': 0
-    },
-    {
-      'name': 'Meditate',
-      'completed': false,
-      'timesPerDay': 1,
-      'currentCount': 0
-    },
-    {
-      'name': 'Walk the Dog',
-      'completed': false,
-      'timesPerDay': 1,
-      'currentCount': 0
-    },
-    {
-      'name': 'Brush Teeth',
-      'completed': false,
-      'timesPerDay': 1,
-      'currentCount': 0
-    },
-    {
-      'name': 'Practice a Hobby',
-      'completed': false,
-      'timesPerDay': 1,
-      'currentCount': 0
-    },
-  ].obs;
+  final User user;
+  RxList<Habit> habits = <Habit>[].obs;
 
-  // Mapa para almacenar hábitos por fecha
-  final _habitsByDate = <String, List<Map<String, dynamic>>>{}.obs;
-  Map<String, List<Map<String, dynamic>>> get habitsByDate => _habitsByDate;
-
-  List<Map<String, dynamic>> get predefinedHabits => _predefinedHabits;
-
-  // Mapa para almacenar el progreso de los hábitos por fecha y nombre
-  final habitProgressByDate = <String, Map<String, Map<String, dynamic>>>{}.obs;
-
-  // Método para agregar un hábito a una fecha específica
-  void addHabit(String date, String name, int timesPerDay, String frequency) {
-    if (!_habitsByDate.containsKey(date)) {
-      _habitsByDate[date] = [];
-    }
-    _habitsByDate[date]!.add({
-      'name': name,
-      'completed': false,
-      'timesPerDay': timesPerDay,
-      'currentCount': 0,
-      'frequency': frequency, // Agregar la frecuencia
-    });
+  HabitsController(this.user) {
+    // Inicializa los hábitos del usuario
+    habits.value = List<Habit>.from(user.habits);
   }
 
-  // Método para obtener los hábitos de una fecha específica
-  List<Map<String, dynamic>> getHabitsForDate(String date) {
-    List<Map<String, dynamic>> habitsForDate = [];
+  List<Habit> get predefinedHabits => [
+        Habit(name: 'Exercise'),
+        Habit(name: 'Drink Water'),
+        Habit(name: 'Read a Book'),
+        Habit(name: 'Meditate'),
+        Habit(name: 'Walk the Dog'),
+        Habit(name: 'Brush Teeth'),
+        Habit(name: 'Practice a Hobby'),
+      ];
 
-    _habitsByDate.forEach((key, habits) {
-      for (var habit in habits) {
-        if (habitAppliesToDate(habit, key, date)) {
-          // Inicializar el progreso si no existe para la fecha actual
-          if (!habitProgressByDate.containsKey(date)) {
-            habitProgressByDate[date] = {};
-          }
-          if (!habitProgressByDate[date]!.containsKey(habit['name'])) {
-            habitProgressByDate[date]![habit['name']] = {
-              'currentCount': 0,
-              'completed': false,
-            };
-          }
+  void addHabit(String date, String name, int timesPerDay, String frequency) {
+    final newHabit = Habit(
+      name: name,
+      timesPerDay: timesPerDay,
+      frequency: frequency,
+      startDate: DateFormat.yMMMMd().parse(date),
+    );
+    habits.add(newHabit);
+    updateUserHabits();
+  }
 
-          // Agregar los datos del progreso al hábito
-          var progress = habitProgressByDate[date]![habit['name']]!;
-          habitsForDate.add({
-            ...habit,
-            'currentCount': progress['currentCount'],
-            'completed': progress['completed'],
-          });
-        }
+  List<Habit> getHabitsForDate(String date) {
+    List<Habit> habitsForDate = [];
+    for (var habit in habits) {
+      if (habitAppliesToDate(habit, date)) {
+        habitsForDate.add(habit);
       }
-    });
-
+    }
     return habitsForDate;
   }
 
-  // Método para verificar si un hábito debe aplicarse en una fecha específica
-  bool habitAppliesToDate(Map<String, dynamic> habit, String startDate, String currentDate) {
-      DateTime start = DateFormat('MMMM d, y').parse(startDate);
-      DateTime current = DateFormat('MMMM d, y').parse(currentDate);
+  bool habitAppliesToDate(Habit habit, String currentDate) {
+    DateTime startDate = habit.startDate ?? DateTime.now();
+    DateTime current = DateFormat.yMMMMd().parse(currentDate);
 
-      switch (habit['frequency']) {
-        case 'Daily':
-          return true;
-        case 'Weekly':
-          return current.difference(start).inDays % 7 == 0;
-        case 'Monthly':
-          return start.day == current.day;
-        case 'Only Today':
-          return startDate == currentDate;
-        default:
-          return false;
-      }
+    switch (habit.frequency) {
+      case 'Daily':
+        return !current.isBefore(startDate);
+      case 'Weekly':
+        return !current.isBefore(startDate) &&
+            current.difference(startDate).inDays % 7 == 0;
+      case 'Monthly':
+        return !current.isBefore(startDate) && current.day == startDate.day;
+      case 'Only Today':
+        return current.isAtSameMomentAs(startDate);
+      default:
+        return false;
     }
+  }
+
+  void deleteHabit(int index) {
+    habits.removeAt(index);
+    updateUserHabits();
+  }
+
+  void updateUserHabits() {
+    user.habits = List<Habit>.from(habits);
+    user.save();
+  }
+
+  void saveUserData() {
+    user.habits = List<Habit>.from(habits);
+    user.save();
+  }
+
+  @override
+  void onClose() {
+    saveUserData();
+    super.onClose();
+  }
 }
