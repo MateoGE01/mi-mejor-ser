@@ -1,9 +1,12 @@
+// lib/presentation/controllers/list_habits.dart
 import 'package:get/get.dart';
 import 'package:mi_mejor_ser/domain/models/user.dart';
-import 'package:intl/intl.dart';
+import 'package:mi_mejor_ser/domain/repositories/user_repository.dart';
 
 class HabitsController extends GetxController {
   final User user;
+  final UserRepository userRepository = Get.find<UserRepository>();
+
   RxList<Habit> habits = <Habit>[].obs;
 
   HabitsController(this.user) {
@@ -21,41 +24,39 @@ class HabitsController extends GetxController {
         Habit(name: 'Practice a Hobby'),
       ];
 
-  void addHabit(String date, String name, int timesPerDay, String frequency) {
+  void addHabit(DateTime date, String name, int timesPerDay, String frequency) {
     final newHabit = Habit(
       name: name,
       timesPerDay: timesPerDay,
       frequency: frequency,
-      startDate: DateFormat.yMMMMd().parse(date),
+      startDate: date, // Usar directamente el objeto DateTime
     );
     habits.add(newHabit);
     updateUserHabits();
   }
 
-  List<Habit> getHabitsForDate(String date) {
+  List<Habit> getHabitsForDate(DateTime currentDate) {
     List<Habit> habitsForDate = [];
     for (var habit in habits) {
-      if (habitAppliesToDate(habit, date)) {
+      if (habitAppliesToDate(habit, currentDate)) {
         habitsForDate.add(habit);
       }
     }
     return habitsForDate;
   }
 
-  bool habitAppliesToDate(Habit habit, String currentDate) {
+  bool habitAppliesToDate(Habit habit, DateTime currentDate) {
     DateTime startDate = habit.startDate ?? DateTime.now();
-    DateTime current = DateFormat.yMMMMd().parse(currentDate);
-
     switch (habit.frequency) {
       case 'Daily':
-        return !current.isBefore(startDate);
+        return !currentDate.isBefore(startDate);
       case 'Weekly':
-        return !current.isBefore(startDate) &&
-            current.difference(startDate).inDays % 7 == 0;
+        return !currentDate.isBefore(startDate) &&
+            currentDate.difference(startDate).inDays % 7 == 0;
       case 'Monthly':
-        return !current.isBefore(startDate) && current.day == startDate.day;
+        return !currentDate.isBefore(startDate) && currentDate.day == startDate.day;
       case 'Only Today':
-        return current.isAtSameMomentAs(startDate);
+        return currentDate.isAtSameMomentAs(startDate);
       default:
         return false;
     }
@@ -68,12 +69,12 @@ class HabitsController extends GetxController {
 
   void updateUserHabits() {
     user.habits = List<Habit>.from(habits);
-    user.save();
+    userRepository.updateUser(user); // Actualizado para usar el repositorio
   }
 
   void saveUserData() {
     user.habits = List<Habit>.from(habits);
-    user.save();
+    userRepository.updateUser(user); // Actualizado para usar el repositorio
   }
 
   @override

@@ -1,14 +1,18 @@
+// lib/presentation/controllers/completed_habits.dart
 import 'package:get/get.dart';
 import 'package:mi_mejor_ser/domain/models/user.dart';
+import 'package:mi_mejor_ser/domain/repositories/user_repository.dart';
 
 class CompletedHabitsController extends GetxController {
   final User user;
+  final UserRepository userRepository = Get.find<UserRepository>();
+
   var level = 0.obs;
   var experience = 0.obs;
 
   CompletedHabitsController(this.user) {
     level.value = user.level;
-    experience.value = user.experience; // Actualizado
+    experience.value = user.experience;
   }
 
   void addCompletedHabit() {
@@ -32,14 +36,14 @@ class CompletedHabitsController extends GetxController {
 
   void updateUserProgress() {
     user.level = level.value;
-    user.experience = experience.value; // Actualizado
-    user.save();
+    user.experience = experience.value;
+    userRepository.updateUser(user); // Actualizado para usar el repositorio
   }
 
   void saveUserData() {
     user.level = level.value;
-    user.experience = experience.value; // Actualizado
-    user.save();
+    user.experience = experience.value;
+    userRepository.updateUser(user); // Actualizado para usar el repositorio
   }
 
   @override
