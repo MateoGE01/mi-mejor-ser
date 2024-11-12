@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mi_mejor_ser/data/services/hive_config.dart';
 import 'package:mi_mejor_ser/domain/models/pending_operation.dart';
 import 'package:mi_mejor_ser/domain/models/user.dart';
+import 'package:mi_mejor_ser/domain/repositories/user_repository.dart';
 import 'package:mi_mejor_ser/domain/use_case/user_usecases.dart';
 import 'package:mi_mejor_ser/presentation/controllers/user_controller.dart';
 import 'package:mi_mejor_ser/presentation/pages/login_page.dart';
@@ -35,6 +36,9 @@ void main() async {
   final registerUser = RegisterUser(userRepository);
   final loginUser = LoginUser(userRepository);
   
+  // Registrar UserRepository en GetX
+  Get.put<UserRepository>(userRepository);
+
   // Sincronizar datos al iniciar
   await userRepository.synchronizeData();
 

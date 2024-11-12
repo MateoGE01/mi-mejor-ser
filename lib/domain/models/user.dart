@@ -89,7 +89,7 @@ class Habit extends HiveObject {
       'timesPerDay': timesPerDay,
       'currentCount': currentCount,
       'frequency': frequency,
-      'startDate': startDate?.toIso8601String(),
+      'startDate': startDate?.toIso8601String(), // Correcto uso de ISO 8601
     };
   }
 
