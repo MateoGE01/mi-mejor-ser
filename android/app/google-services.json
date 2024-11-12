@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "444122995778",
+    "project_id": "mi-mejor-ser",
+    "storage_bucket": "mi-mejor-ser.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444122995778:android:162f0e0b632e9ff3b661db",
+        "android_client_info": {
+          "package_name": "com.mi_mejor_ser.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTebof2sV3g84uUZ33IZAXd_kCVI-G4zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
