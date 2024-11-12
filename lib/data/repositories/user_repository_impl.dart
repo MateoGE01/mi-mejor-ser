@@ -54,6 +54,18 @@ class UserRepositoryImpl implements UserRepository {
     return null;
   }
 
+  @override
+  Future<void> updateUser(User user) async {
+    await userBox.put(user.username, user);
+    try {
+      await remoteDataSource.updateUser(user);
+    } catch (e) {
+      await pendingOperations.addOperation(
+        PendingOperation(type: OperationType.update, user: user),
+      );
+    }
+  }
+
   Future<void> synchronizeData() async {
     try {
       List<User> remoteUsers = await remoteDataSource.fetchAllUsers();

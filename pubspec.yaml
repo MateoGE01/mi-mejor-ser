@@ -75,6 +75,7 @@ flutter:
     - lib/presentation/assets/images/Raven.png
     - lib/presentation/assets/images/Slytherin.png
     - lib/presentation/assets/images/vacaPatineta.jpg
+    - lib/presentation/assets/images/Mi_Mejor_Ser_Logo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

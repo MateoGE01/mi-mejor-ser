@@ -1,12 +1,13 @@
+// lib/presentation/pages/habit_page.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mi_mejor_ser/domain/models/user.dart';
 import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
 import 'package:mi_mejor_ser/presentation/controllers/list_habits.dart';
 import 'package:mi_mejor_ser/presentation/widgets/exp_progress_bar.dart';
 import 'package:mi_mejor_ser/presentation/widgets/habit.dart';
 import 'package:mi_mejor_ser/presentation/widgets/add_habit_box.dart';
 import 'package:intl/intl.dart';
-import 'package:mi_mejor_ser/domain/models/user.dart';
 
 class HabitPage extends StatefulWidget {
   final User user;
@@ -41,7 +42,7 @@ class _HabitPageState extends State<HabitPage> {
   }
 
   String getFormattedDate() {
-    return DateFormat.yMMMMd().format(currentDate);
+    return DateFormat.yMMMMd().format(currentDate); // Solo para display
   }
 
   void previousDay() {
@@ -59,7 +60,7 @@ class _HabitPageState extends State<HabitPage> {
   void addHabitAction() {
     setState(() {
       habitsController.addHabit(
-        getFormattedDate(),
+        currentDate, // Pasar DateTime directamente
         _newHabitDialogController.text,
         int.tryParse(_timesPerDayDialogController.text) ?? 1,
         selectedFrequency ?? 'Daily',
@@ -67,8 +68,6 @@ class _HabitPageState extends State<HabitPage> {
     });
     _newHabitDialogController.clear();
     _timesPerDayDialogController.clear();
-    Navigator.of(context).pop();
-    selectedFrequency = 'Daily';
   }
 
   void cancelAction() {
@@ -102,7 +101,7 @@ class _HabitPageState extends State<HabitPage> {
   void checkBoxTap(bool? value, int index) {
     setState(() {
       final habit =
-          habitsController.getHabitsForDate(getFormattedDate())[index];
+          habitsController.getHabitsForDate(currentDate)[index];
 
       if (value == true) {
         habit.currentCount++;
@@ -110,7 +109,8 @@ class _HabitPageState extends State<HabitPage> {
         if (habit.currentCount >= habit.timesPerDay) {
           habit.completed = true;
           completedHabitsController.addCompletedHabit();
-          completedHabitsController.givingExperiencePerHabit(habit.timesPerDay);
+          completedHabitsController
+              .givingExperiencePerHabit(habit.timesPerDay);
         }
       } else {
         if (habit.currentCount > 0) {
@@ -123,7 +123,7 @@ class _HabitPageState extends State<HabitPage> {
         }
       }
 
-      // Actualizar el estado del usuario y guardar
+      // Actualizar el estado del usuario y guardar a través del repositorio
       habitsController.updateUserHabits();
       completedHabitsController.updateUserProgress();
     });
@@ -267,12 +267,10 @@ class _HabitPageState extends State<HabitPage> {
           // Lista de hábitos
           Expanded(
             child: Obx(() {
-              var habits =
-                  habitsController.getHabitsForDate(getFormattedDate());
               return ListView.builder(
-                itemCount: habits.length,
+                itemCount: habitsController.getHabitsForDate(currentDate).length,
                 itemBuilder: (context, index) {
-                  final habit = habits[index];
+                  final habit = habitsController.getHabitsForDate(currentDate)[index];
                   return BoolHabit(
                     habitName: habit.name,
                     habitCompleted: habit.completed,
