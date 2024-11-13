@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:mi_mejor_ser/presentation/controllers/completed_habits.dart';
 
 class ExperienceProgressBar extends StatelessWidget {
   final int experience;
